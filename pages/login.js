@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Cookies from "js-cookie";
+import { useToast } from "@chakra-ui/react";
 
 export default function Login() {
+  const toast = useToast();
   const router = useRouter();
   const { mutate } = useMutation();
   const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +24,7 @@ export default function Login() {
 
   const HandleSubmit = async () => {
     const response = await mutate({
-      url: "https://paace-f178cafcae7b.nevacloud.io/api/login",
+      url: `https://paace-f178cafcae7b.nevacloud.io/api/login/`,
       payload,
     });
     if (!response?.success) {

@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import Cookies from "js-cookie";
 
 export const useMutation = () => {
   const [data, setData] = useState({
@@ -6,6 +7,7 @@ export const useMutation = () => {
     isLoading: false,
     isError: false,
   });
+  const token = Cookies.get("user_token");
   const mutate = useCallback(
     async ({ url = "", method = "POST", payload = {}, headers = {} }) => {
       setData({
@@ -17,6 +19,7 @@ export const useMutation = () => {
           method,
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
             ...headers,
           },
           ...(method !== "GET" && { body: JSON.stringify(payload) }),

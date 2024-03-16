@@ -16,14 +16,14 @@ export default function Beranda() {
 
   return (
     <div className="h-screen bg-gray-200 grid grid-cols-12 gap-2 ">
-      <div className="col-span-3 border border-red-500"></div>
+      <div className="col-span-3 "></div>
       <div className="col-span-6  mt-4">
         <Story onClick={openModal} />
         <div className="mt-4">
           <Content />
         </div>
       </div>
-      <div className="col-span-3 border border-red-500"></div>
+      <div className="col-span-3 "></div>
 
       <AddStory
         isOpen={isModalOpen}
