@@ -14,6 +14,7 @@ import { useMutation } from "@/hooks/useMutation";
 import { AiFillLike } from "react-icons/ai";
 export default function Content() {
   const { mutate } = useMutation();
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [isInputClicked, setIsInputClicked] = useState(false);
 
@@ -69,19 +70,25 @@ export default function Content() {
       url: `https://paace-f178cafcae7b.nevacloud.io/api/likes/post/${id}`,
     });
 
-    console.log("response ", response);
+    setLoading(true);
+    router.reload();
   };
   const handleUnLike = async (id) => {
     const response = await mutate({
       url: `https://paace-f178cafcae7b.nevacloud.io/api/unlikes/post/${id}`,
     });
-
-    console.log("response ", response);
+    setLoading(true);
+    router.reload();
   };
   console.log("data", data);
   return (
     <div className="">
       {isLoading && <div>Loading...</div>}
+      {loading && (
+        <div className="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-200"></div>
+        </div>
+      )}
       {error && <div>Error fetching data</div>}
       {data?.data?.map((item) => (
         <div key={item.id} className="bg-white shadow-sm rounded-md p-4 my-2">
