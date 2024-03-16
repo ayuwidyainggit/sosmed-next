@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import { useMutation } from "@/hooks/useMutation";
 import { AiFillLike } from "react-icons/ai";
-export default function Content() {
+export default function ContentMe() {
   const { mutate } = useMutation();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -24,7 +24,7 @@ export default function Content() {
   const token = Cookies.get("user_token"); // Replace with your actual token
 
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts?type=all`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts?type=me`,
     async (url) => {
       const response = await fetch(url, {
         headers: {
