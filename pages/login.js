@@ -1,10 +1,13 @@
 import Image from "next/image";
+import { useMutation } from "@/hooks/useMutation";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Cookies from "js-cookie";
 
 export default function Login() {
   const router = useRouter();
+  const { mutate } = useMutation();
   const [showPassword, setShowPassword] = useState(false);
   const [payload, setPayload] = useState({
     email: "",
@@ -17,6 +20,31 @@ export default function Login() {
 
   const isDisabled = !payload.email || !payload.password;
 
+  const HandleSubmit = async () => {
+    const response = await mutate({
+      url: "https://paace-f178cafcae7b.nevacloud.io/api/login",
+      payload,
+    });
+    if (!response?.success) {
+      toast({
+        title: "Login Failure.",
+        description: "please input your email and password correctly",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+    } else {
+      Cookies.set("user_token", response?.data?.token, {
+        expires: new Date(response?.data?.expires_at),
+        path: "/",
+      });
+
+      router.push("/");
+    }
+
+    // console.log("login", response);
+  };
   return (
     <div className="  flex justify-center items-center h-screen">
       <div className="w-[400px] h-[500px]  md:border md:border-gray-400 ">
@@ -60,6 +88,7 @@ export default function Login() {
                 : "bg-blue text-white"
             } w-full py-2 rounded-md`}
             disabled={isDisabled}
+            onClick={() => HandleSubmit()}
           >
             Log in
           </button>
