@@ -32,8 +32,8 @@ export default function Profile() {
     <Layout metaTitle="profile">
       <div className=" bg-gray-200 min-h-screen grid grid-cols-12 gap-2 ">
         <div className="col-span-12 md:col-span-3 "></div>
-        <div className="col-span-12 px-4 md:px-0 md:col-span-6 mt-1 ">
-          <div className="bg-white p-4 rounded-md">
+        <div className="col-span-12 bg-white min-h-screen px-4 md:px-0 md:col-span-6 mt-1  ">
+          <div className="bg-white shadow-sm p-4 rounded-md">
             <div className="flex justify-center">
               <IoPerson style={{ width: "40px", height: "40px" }} />
             </div>

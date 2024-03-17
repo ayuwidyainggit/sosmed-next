@@ -12,6 +12,9 @@ import Cookies from "js-cookie";
 import { useMutation } from "@/hooks/useMutation";
 import { AiFillLike } from "react-icons/ai";
 import { SlOptionsVertical } from "react-icons/sl";
+import EditStory from "../editStory";
+import TimeAgo from "react-timeago";
+import localeId from "react-timeago/lib/language-strings/id";
 export default function ContentMe() {
   const { mutate } = useMutation();
   const [loading, setLoading] = useState(false);
@@ -86,6 +89,7 @@ export default function ContentMe() {
     setIsOpenOptions(!isOpenOptions);
   };
 
+  console.log("open option", isOpenOptions);
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
@@ -106,6 +110,41 @@ export default function ContentMe() {
     }
   };
 
+  //  edit modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editPostId, setEditPostId] = useState(null);
+  const [descEdit, setDescEdit] = useState("");
+  const [story, setStory] = useState({
+    description: "",
+  });
+
+  const openModal = (postId, description) => {
+    setEditPostId(postId);
+    setDescEdit(description);
+    setStory((prevStory) => ({ ...prevStory, description: description }));
+    setIsOpenOptions(false);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+  const handleSubmitEdit = async () => {
+    try {
+      const response = await mutate({
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/update/${editPostId}`,
+        payload: story,
+        method: "PATCH",
+      });
+
+      router.reload();
+      setLoading(true);
+      closeModal();
+    } catch (error) {}
+  };
+
+  // end edit modal
+
   return (
     <div className="">
       {isLoading && <div>Loading...</div>}
@@ -116,8 +155,8 @@ export default function ContentMe() {
       )}
       {error && <div>Error fetching data</div>}
       {data?.data?.map((item) => (
-        <div key={item.id} className="bg-white shadow-sm rounded-md p-4 my-2">
-          <div className=" relative grid grid-cols-12 gap-2 my-1">
+        <div key={item.id} className="bg-white shadow-md rounded-md p-4 my-2">
+          <div className="relative grid grid-cols-12 gap-2 my-1">
             <div
               className="flex items-center justify-center rounded-full h-10 w-10 "
               style={{
@@ -132,7 +171,9 @@ export default function ContentMe() {
               <div className="flex ">
                 <p className="text-xs text-gray-500">{item.user.email}</p>
                 <p className="text-xs text-gray-500 px-1">.</p>
-                <p className="text-xs text-gray-500 ">4 jam </p>
+                <p className="text-xs text-gray-500 ">
+                  <TimeAgo date={new Date(item.created_at)} locale={localeId} />
+                </p>
                 <p className="text-xs text-gray-500 px-1">.</p>
                 <GiWorld />
                 <p className="text-xs text-gray-500 px-1">Edited </p>
@@ -214,15 +255,17 @@ export default function ContentMe() {
                 </div>
               </div>
             </div>
-            <div className="absolute right-1 hover:bg-sky-100 p-2 hover:rounded-md">
-              <SlOptionsVertical onClick={openOptions} />
-            </div>
+            {item.is_own_post && (
+              <div className="absolute right-1 hover:bg-sky-100 p-2 hover:rounded-md">
+                <SlOptionsVertical onClick={openOptions} />
+              </div>
+            )}
 
             {isOpenOptions && (
               <div className="absolute right-4 top-6 bg-white shadow-md py-2 pl-2 pr-6 cursor-pointer">
                 <p
                   className="hover:text-red-500"
-                  onClick={() => openModal(item?.id)}
+                  onClick={() => openModal(item?.id, item?.description)}
                 >
                   Edit
                 </p>
@@ -237,6 +280,18 @@ export default function ContentMe() {
           </div>
         </div>
       ))}
+
+      <EditStory
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        content={"Edit Story"}
+        onclickclose={closeModal}
+        value={story?.description || ""}
+        onChange={(event) =>
+          setStory({ ...story, description: event.target.value })
+        }
+        onClick={handleSubmitEdit}
+      />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import useSWR from "swr";
 import TimeAgo from "react-timeago";
 import localeId from "react-timeago/lib/language-strings/id";
+import Image from "next/image";
 
 export default function Notification() {
   const token = Cookies.get("user_token");
@@ -57,34 +58,52 @@ export default function Notification() {
       <div className=" bg-gray-200 min-h-screen grid grid-cols-12 gap-2 ">
         <div className="hidden md:flex md:col-span-3 "></div>
         <div className="col-span-12 px-4 md:px-0 md:col-span-6 mt-1 ">
-          {data?.data?.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white p-4 rounded-md col-span-12 grid grid-cols-12 items-center mb-1"
-            >
-              <div className="col-span-6 md:col-span-3 flex bg-sky-100 p-1 rounded-full mr-2">
-                <div
-                  className="w-[30px] h-[30px] flex items-center justify-center rounded-full"
-                  style={{
-                    backgroundColor: getRandomColor(),
-                    color: getContrastColor(getRandomColor()),
-                  }}
-                >
-                  <p className="text-xs font-bold">
-                    {getInitials(item.user.name)}
-                  </p>
-                </div>
-
-                <p className=" pl-3">{item.user.name}</p>
-              </div>
-              <div className="col-span-9 flex">
-                <p>{item.remark} your post</p> <p className="px-2">.</p>{" "}
-                <p className=" italic">
-                  <TimeAgo date={new Date(item.created_at)} locale={localeId} />
-                </p>
+          {data?.data?.length === 0 ? (
+            <div className="bg-white min-h-screen rounded-sm">
+              <div className="flex justify-center">
+                <Image
+                  alt="no-data"
+                  src="/noData.png"
+                  width={500}
+                  height={500}
+                />
               </div>
             </div>
-          ))}
+          ) : (
+            <div>
+              {data?.data?.map((item) => (
+                <div
+                  key={item.id}
+                  className="bg-white p-4 rounded-md col-span-12 grid grid-cols-12 items-center mb-1"
+                >
+                  <div className="col-span-6 md:col-span-3 flex bg-sky-100 p-1 rounded-full mr-2">
+                    <div
+                      className="w-[30px] h-[30px] flex items-center justify-center rounded-full"
+                      style={{
+                        backgroundColor: getRandomColor(),
+                        color: getContrastColor(getRandomColor()),
+                      }}
+                    >
+                      <p className="text-xs font-bold">
+                        {getInitials(item.user.name)}
+                      </p>
+                    </div>
+
+                    <p className=" pl-3">{item.user.name}</p>
+                  </div>
+                  <div className="col-span-9 flex">
+                    <p>{item.remark} your post</p> <p className="px-2">.</p>{" "}
+                    <p className=" italic">
+                      <TimeAgo
+                        date={new Date(item.created_at)}
+                        locale={localeId}
+                      />
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div className="col-span-12 md:col-span-3 "></div>
       </div>

@@ -29,7 +29,7 @@ export default function EditStory({
         style={{
           content: {
             width: "40%",
-            height: "50%",
+            height: "40%",
             margin: "auto",
           },
         }}
@@ -65,9 +65,9 @@ export default function EditStory({
                 value={value}
               />
             </div>
-            <div className="absolute bottom-2 w-[93%]">
+            <div className="absolute bottom-2 w-[100px]">
               <button
-                className="w-full bg-blue py-2 rounded-md text-white"
+                className="w-full bg-blue opacity-90 hover:opacity-100 py-2 rounded-md text-white"
                 onClick={onClick}
               >
                 Send

@@ -16,6 +16,10 @@ import EditStory from "../editStory";
 import Modal from "react-modal";
 import { IoCloseSharp } from "react-icons/io5";
 import AddStory from "../addStory";
+import TimeAgo from "react-timeago";
+import localeId from "react-timeago/lib/language-strings/id";
+import Comment from "../comment";
+import { useQueries } from "@/hooks/useQueries";
 
 export default function Content() {
   const { mutate } = useMutation();
@@ -150,6 +154,20 @@ export default function Content() {
   };
 
   // end edit modal
+
+  // comment modal
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [commentId, setCommentId] = useState(null);
+
+  const openCommentModal = async (id) => {
+    setIsCommentModalOpen(true);
+    setCommentId(id);
+  };
+  const closeCommentModal = () => {
+    setIsCommentModalOpen(false);
+  };
+
+  // comment modal
   return (
     <div className="">
       {isLoading && <div>Loading...</div>}
@@ -160,7 +178,7 @@ export default function Content() {
       )}
       {error && <div>Error fetching data</div>}
       {data?.data?.map((item) => (
-        <div key={item.id} className="bg-white shadow-sm rounded-md p-4 my-2">
+        <div key={item.id} className="bg-white shadow-md rounded-md p-4 my-2">
           <div className="relative grid grid-cols-12 gap-2 my-1">
             <div
               className="flex items-center justify-center rounded-full h-10 w-10 "
@@ -176,10 +194,16 @@ export default function Content() {
               <div className="flex ">
                 <p className="text-xs text-gray-500">{item.user.email}</p>
                 <p className="text-xs text-gray-500 px-1">.</p>
-                <p className="text-xs text-gray-500 ">4 jam </p>
+                <p className="text-xs text-gray-500 ">
+                  <TimeAgo date={new Date(item.created_at)} locale={localeId} />
+                </p>
                 <p className="text-xs text-gray-500 px-1">.</p>
                 <GiWorld />
-                <p className="text-xs text-gray-500 px-1">Edited </p>
+                {item.created_at === item.updated_at ? (
+                  <p className="text-xs text-gray-500 px-1">Edited </p>
+                ) : (
+                  " "
+                )}
               </div>
               <div className="">
                 <p className="text-sm">{item.description}</p>
@@ -211,7 +235,10 @@ export default function Content() {
                 </div>
               </div>
               <div className="">
-                <button className="text-sm text-gray-500">
+                <button
+                  className="text-sm text-gray-500"
+                  onClick={() => openCommentModal(item.id)}
+                >
                   Lihat semua komentar
                 </button>
 
@@ -294,6 +321,14 @@ export default function Content() {
           setStory({ ...story, description: event.target.value })
         }
         onClick={handleSubmitEdit}
+      />
+
+      <Comment
+        isOpen={isCommentModalOpen}
+        onRequestClose={closeCommentModal}
+        content={"Reply Post"}
+        commentId={commentId}
+        onclickclose={closeCommentModal}
       />
     </div>
   );
