@@ -8,6 +8,7 @@ export const useMutation = () => {
     isError: false,
   });
   const token = Cookies.get("user_token");
+  console.log("token", token);
   const mutate = useCallback(
     async ({ url = "", method = "POST", payload = {}, headers = {} }) => {
       setData({

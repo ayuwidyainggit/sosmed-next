@@ -3,7 +3,7 @@ import { GiWorld } from "react-icons/gi";
 import { FcLike } from "react-icons/fc";
 import { FaRegComment } from "react-icons/fa";
 import { IoShareSocialOutline } from "react-icons/io5";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdSend } from "react-icons/io";
 import fetcher from "@/utils/fetcher";
 import useSWR from "swr";
@@ -12,6 +12,7 @@ import Cookies from "js-cookie";
 import { useMutation } from "@/hooks/useMutation";
 import { AiFillLike } from "react-icons/ai";
 import { SlOptionsVertical } from "react-icons/sl";
+import EditStory from "../editStory";
 
 export default function Content() {
   const { mutate } = useMutation();
@@ -99,9 +100,25 @@ export default function Content() {
       if (result?.success) {
         router.reload();
       }
-    } catch (error) {}
+    } catch (error) {
+      alert("data gagal di hapus ");
+    }
   };
 
+  //  edit modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [descEdit, setDescEdit] = useState("");
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  // end edit modal
+  console.log("data edit", descEdit);
   return (
     <div className="">
       {isLoading && <div>Loading...</div>}
@@ -218,7 +235,12 @@ export default function Content() {
 
             {isOpenOptions && (
               <div className="absolute right-4 top-6 bg-white shadow-md py-2 pl-2 pr-6 cursor-pointer">
-                <p className="hover:text-red-500">Edit</p>
+                <p
+                  className="hover:text-red-500"
+                  onClick={() => openModal(item?.id)}
+                >
+                  Edit
+                </p>
                 <p
                   className="hover:text-red-500"
                   onClick={() => handleDelete(item?.id)}
@@ -228,6 +250,14 @@ export default function Content() {
               </div>
             )}
           </div>
+
+          <EditStory
+            isOpen={isModalOpen}
+            onRequestClose={closeModal}
+            content={"Edit post"}
+            onclickclose={closeModal}
+            id={item.id}
+          />
         </div>
       ))}
     </div>

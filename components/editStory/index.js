@@ -5,11 +5,12 @@ import { useMutation } from "@/hooks/useMutation";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-export default function AddStory({
+export default function EditStory({
   isOpen,
   onRequestClose,
   content,
   onclickclose,
+  id,
 }) {
   const { mutate } = useMutation();
   const router = useRouter();
@@ -19,14 +20,29 @@ export default function AddStory({
 
   const handleSubmit = async () => {
     try {
-      const response = await mutate({
-        url: `https://paace-f178cafcae7b.nevacloud.io/api/post`,
-        payload: story,
-      });
-      onclickclose();
-      router.reload();
+      const response = await fetch(
+        `https://paace-f178cafcae7b.nevacloud.io/api/post/update/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: notes?.title,
+            description: notes?.description,
+          }),
+        }
+      );
+
+      const result = await response.json();
+      if (result?.success) {
+        onclickclose();
+        // router.push("/");
+      }
+      console.log("result ", result);
     } catch (error) {}
   };
+
   return (
     <div className=" relative">
       <Modal

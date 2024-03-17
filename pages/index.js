@@ -1,5 +1,6 @@
 import AddStory from "@/components/addStory";
 import Content from "@/components/content";
+import EditStory from "@/components/editStory";
 import Story from "@/components/story";
 import Layout from "@/layout";
 import React, { useState } from "react";

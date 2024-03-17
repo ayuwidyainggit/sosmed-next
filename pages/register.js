@@ -1,9 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { useToast } from "@chakra-ui/react";
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
+  const toast = useToast();
+  const router = useRouter();
   const [payload, setPayload] = useState({
     name: "",
     email: "",
@@ -12,6 +16,37 @@ export default function Register() {
     hobby: "",
     password: "",
   });
+
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch(
+        "https://paace-f178cafcae7b.nevacloud.io/api/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (response.ok) {
+        router.push("/login");
+      } else {
+        // Handle registration failure
+        console.error("Registration failed:", response.statusText);
+        toast({
+          title: "Failed",
+          description: "response.statusText",
+          status: "failed",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.error("Error registering:", error);
+    }
+  };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -46,7 +81,7 @@ export default function Register() {
           <input
             type="text"
             className="border border-gray-300 h-[40px] w-full pl-2 text-sm"
-            placeholder="username"
+            placeholder="email"
             value={payload?.email}
             onChange={(event) =>
               setPayload({ ...payload, email: event.target.value })
@@ -111,7 +146,8 @@ export default function Register() {
                 ? "bg-blue text-white opacity-75 cursor-not-allowed"
                 : "bg-blue text-white"
             } w-full py-2 rounded-md`}
-            disabled={isDisabled}
+            // disabled={isDisabled}
+            onClick={() => handleSubmit()}
           >
             Register
           </button>
