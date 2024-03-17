@@ -15,6 +15,7 @@ import { SlOptionsVertical } from "react-icons/sl";
 import EditStory from "../editStory";
 import TimeAgo from "react-timeago";
 import localeId from "react-timeago/lib/language-strings/id";
+import Comment from "../comment";
 export default function ContentMe() {
   const { mutate } = useMutation();
   const [loading, setLoading] = useState(false);
@@ -145,6 +146,19 @@ export default function ContentMe() {
 
   // end edit modal
 
+  // comment modal
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [commentId, setCommentId] = useState(null);
+
+  const openCommentModal = async (id) => {
+    setIsCommentModalOpen(true);
+    setCommentId(id);
+  };
+  const closeCommentModal = () => {
+    setIsCommentModalOpen(false);
+  };
+
+  // comment modal
   return (
     <div className="">
       {isLoading && <div>Loading...</div>}
@@ -208,7 +222,10 @@ export default function ContentMe() {
                 </div>
               </div>
               <div className="">
-                <button className="text-sm text-gray-500">
+                <button
+                  className="text-sm text-gray-500"
+                  onClick={() => openCommentModal(item.id)}
+                >
                   Lihat semua komentar
                 </button>
 
@@ -291,6 +308,13 @@ export default function ContentMe() {
           setStory({ ...story, description: event.target.value })
         }
         onClick={handleSubmitEdit}
+      />
+      <Comment
+        isOpen={isCommentModalOpen}
+        onRequestClose={closeCommentModal}
+        content={"Reply Post"}
+        commentId={commentId}
+        onclickclose={closeCommentModal}
       />
     </div>
   );
