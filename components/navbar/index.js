@@ -45,9 +45,11 @@ export default function Navbar() {
         </Link>
         <div className="relative flex items-center">
           <div className="w-[30px] h-[30px] border border-red-500 rounded-full mr-2 flex justify-center items-center">
-            <IoMdNotifications
-              style={{ width: "25px", height: "25px", color: "red" }}
-            />
+            <Link href="/notification">
+              <IoMdNotifications
+                style={{ width: "25px", height: "25px", color: "red" }}
+              />
+            </Link>
           </div>
           <div className="relative ">
             <BsPersonCircle

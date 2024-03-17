@@ -1,6 +1,9 @@
 import Modal from "react-modal";
 import { IoCloseSharp } from "react-icons/io5";
 import { IoPerson } from "react-icons/io5";
+import { useMutation } from "@/hooks/useMutation";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 export default function AddStory({
   closeModal,
@@ -9,6 +12,22 @@ export default function AddStory({
   content,
   onclickclose,
 }) {
+  const { mutate } = useMutation();
+  const router = useRouter();
+  const [story, setStory] = useState({
+    description: "",
+  });
+
+  const handleSubmit = async () => {
+    try {
+      const response = await mutate({
+        url: `https://paace-f178cafcae7b.nevacloud.io/api/post`,
+        payload: story,
+      });
+      onclickclose();
+      router.reload();
+    } catch (error) {}
+  };
   return (
     <div className=" relative">
       <Modal
@@ -50,10 +69,16 @@ export default function AddStory({
                 type="text"
                 placeholder="Apa yang anda pikirkan  "
                 className="outline-none  w-full "
+                onChange={(event) =>
+                  setStory({ ...story, description: event.target.value })
+                }
               />
             </div>
             <div className="absolute bottom-2 w-[93%]">
-              <button className="w-full bg-blue py-2 rounded-md text-white">
+              <button
+                className="w-full bg-blue py-2 rounded-md text-white"
+                onClick={() => handleSubmit()}
+              >
                 Send
               </button>
             </div>
