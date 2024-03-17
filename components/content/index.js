@@ -25,11 +25,34 @@ export default function Content() {
   const { mutate } = useMutation();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [isInputClicked, setIsInputClicked] = useState(false);
 
-  const expandTextarea = () => {
+  // add komentar
+  const [isInputClicked, setIsInputClicked] = useState(false);
+  const [idInputClicked, setIdInputClicked] = useState(null);
+  const [comment, setComment] = useState({
+    description: "",
+  });
+
+  const expandTextarea = (id) => {
     setIsInputClicked(true);
+    setIdInputClicked(id);
   };
+
+  const handleSubmitKomentar = async (id) => {
+    try {
+      const response = await mutate({
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/replies/post/${id}`,
+        payload: comment,
+        method: "POST",
+      });
+
+      router.reload();
+    } catch (error) {
+      console.log("error submit", error);
+    }
+  };
+
+  // add komentar end
 
   const token = Cookies.get("user_token"); // Replace with your actual token
 
@@ -91,6 +114,7 @@ export default function Content() {
   };
 
   const [isOpenOptions, setIsOpenOptions] = useState(false);
+  const [idOpenOptions, setIdOpenOptions] = useState("");
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -135,8 +159,9 @@ export default function Content() {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  const openOptions = () => {
+  const openOptions = (id) => {
     setIsOpenOptions(!isOpenOptions);
+    setIdOpenOptions(id);
   };
 
   const handleSubmitEdit = async () => {
@@ -267,17 +292,29 @@ export default function Content() {
                     <input
                       type="text"
                       className={` bg-gray-100 pl-4 text-xs  w-full outline-none ${
-                        isInputClicked
+                        isInputClicked && idInputClicked === item?.id
                           ? "rounded-lg h-[50px] py-0"
                           : "rounded-full py-2 h-auto"
                       }`}
-                      placeholder={isInputClicked ? "" : "Tulis komentar ..."}
-                      onClick={expandTextarea}
+                      placeholder={
+                        isInputClicked && idInputClicked === item?.id
+                          ? ""
+                          : "Tulis komentar ..."
+                      }
+                      onChange={(event) =>
+                        setComment({
+                          ...comment,
+                          description: event.target.value,
+                        })
+                      }
+                      onClick={() => expandTextarea(item?.id)}
                     />
-                    {isInputClicked && (
+                    {isInputClicked && idInputClicked === item?.id && (
                       <div className="absolute right-2 bottom-2">
                         <button className="sendButton">
-                          <IoMdSend />
+                          <IoMdSend
+                            onClick={() => handleSubmitKomentar(item?.id)}
+                          />
                         </button>
                       </div>
                     )}
@@ -287,11 +324,11 @@ export default function Content() {
             </div>
             {item.is_own_post && (
               <div className="absolute right-1 hover:bg-sky-100 p-2 hover:rounded-md">
-                <SlOptionsVertical onClick={openOptions} />
+                <SlOptionsVertical onClick={() => openOptions(item?.id)} />
               </div>
             )}
 
-            {isOpenOptions && (
+            {isOpenOptions && idOpenOptions === item?.id && (
               <div className="absolute right-4 top-6 bg-white shadow-md py-2 pl-2 pr-6 cursor-pointer">
                 <p
                   className="hover:text-red-500"
