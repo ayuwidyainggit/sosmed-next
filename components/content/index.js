@@ -87,6 +87,9 @@ export default function Content() {
   const openOptions = () => {
     setIsOpenOptions(!isOpenOptions);
   };
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -94,6 +97,9 @@ export default function Content() {
         `https://paace-f178cafcae7b.nevacloud.io/api/post/delete/${id}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       const result = await response.json();
@@ -118,7 +124,6 @@ export default function Content() {
   };
 
   // end edit modal
-  console.log("data edit", descEdit);
   return (
     <div className="">
       {isLoading && <div>Loading...</div>}
