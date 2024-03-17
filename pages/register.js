@@ -20,7 +20,7 @@ export default function Register() {
   const handleSubmit = async () => {
     try {
       const response = await fetch(
-        "https://paace-f178cafcae7b.nevacloud.io/api/register",
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/register`,
         {
           method: "POST",
           headers: {

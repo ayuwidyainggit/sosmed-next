@@ -13,6 +13,9 @@ import { useMutation } from "@/hooks/useMutation";
 import { AiFillLike } from "react-icons/ai";
 import { SlOptionsVertical } from "react-icons/sl";
 import EditStory from "../editStory";
+import Modal from "react-modal";
+import { IoCloseSharp } from "react-icons/io5";
+import AddStory from "../addStory";
 
 export default function Content() {
   const { mutate } = useMutation();
@@ -84,9 +87,7 @@ export default function Content() {
   };
 
   const [isOpenOptions, setIsOpenOptions] = useState(false);
-  const openOptions = () => {
-    setIsOpenOptions(!isOpenOptions);
-  };
+
   const headers = {
     Authorization: `Bearer ${token}`,
   };
@@ -94,7 +95,7 @@ export default function Content() {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
-        `https://paace-f178cafcae7b.nevacloud.io/api/post/delete/${id}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/delete/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -113,14 +114,39 @@ export default function Content() {
 
   //  edit modal
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editPostId, setEditPostId] = useState(null);
   const [descEdit, setDescEdit] = useState("");
+  const [story, setStory] = useState({
+    description: "",
+  });
 
-  const openModal = () => {
+  const openModal = (postId, description) => {
+    setEditPostId(postId);
+    setDescEdit(description);
+    setStory((prevStory) => ({ ...prevStory, description: description }));
+    setIsOpenOptions(false);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+  const openOptions = () => {
+    setIsOpenOptions(!isOpenOptions);
+  };
+
+  const handleSubmitEdit = async () => {
+    try {
+      const response = await mutate({
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/update/${editPostId}`,
+        payload: story,
+        method: "PATCH",
+      });
+
+      router.reload();
+      setLoading(true);
+      closeModal();
+    } catch (error) {}
   };
 
   // end edit modal
@@ -242,7 +268,7 @@ export default function Content() {
               <div className="absolute right-4 top-6 bg-white shadow-md py-2 pl-2 pr-6 cursor-pointer">
                 <p
                   className="hover:text-red-500"
-                  onClick={() => openModal(item?.id)}
+                  onClick={() => openModal(item?.id, item?.description)}
                 >
                   Edit
                 </p>
@@ -255,16 +281,20 @@ export default function Content() {
               </div>
             )}
           </div>
-
-          <EditStory
-            isOpen={isModalOpen}
-            onRequestClose={closeModal}
-            content={"Edit post"}
-            onclickclose={closeModal}
-            id={item.id}
-          />
         </div>
       ))}
+
+      <EditStory
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        content={"Edit Story"}
+        onclickclose={closeModal}
+        value={story?.description || ""}
+        onChange={(event) =>
+          setStory({ ...story, description: event.target.value })
+        }
+        onClick={handleSubmitEdit}
+      />
     </div>
   );
 }

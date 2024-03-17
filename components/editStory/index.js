@@ -10,38 +10,15 @@ export default function EditStory({
   onRequestClose,
   content,
   onclickclose,
-  id,
+  value,
+  onChange,
+  onClick,
 }) {
   const { mutate } = useMutation();
   const router = useRouter();
   const [story, setStory] = useState({
     description: "",
   });
-
-  const handleSubmit = async () => {
-    try {
-      const response = await fetch(
-        `https://paace-f178cafcae7b.nevacloud.io/api/post/update/${id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title: notes?.title,
-            description: notes?.description,
-          }),
-        }
-      );
-
-      const result = await response.json();
-      if (result?.success) {
-        onclickclose();
-        // router.push("/");
-      }
-      console.log("result ", result);
-    } catch (error) {}
-  };
 
   return (
     <div className=" relative">
@@ -84,15 +61,14 @@ export default function EditStory({
                 type="text"
                 placeholder="Apa yang anda pikirkan  "
                 className="outline-none  w-full "
-                onChange={(event) =>
-                  setStory({ ...story, description: event.target.value })
-                }
+                onChange={onChange}
+                value={value}
               />
             </div>
             <div className="absolute bottom-2 w-[93%]">
               <button
                 className="w-full bg-blue py-2 rounded-md text-white"
-                onClick={() => handleSubmit()}
+                onClick={onClick}
               >
                 Send
               </button>
